@@ -89,7 +89,7 @@ html,body,#game,canvas,.controls,.btn,.screen,.scene,.story{touch-action:none!im
 <canvas id="game" aria-label="All on Red! Level 2 playable game"></canvas>
 <div class="hud"><div class="upper"><div class="tag" id="health">RED MAN ♥ ♥ ♥ ♥ ♥ ♥</div><div class="tag" id="power" aria-label="Special attack power coins">POWER ◉ 0/5</div><div class="tag objective" id="objective">OPENING — MEET ANNIE AT COMIC CON</div><button class="menubtn" id="mute" style="right:85px">♫ ON</button><button class="menubtn" id="testSound" style="background:#bdeccb">♪ TEST</button><button class="menubtn" id="pause">Ⅱ PAUSE</button></div>
 <div class="controls"><div class="pad"><div class="btn" data-key="up">▲</div><div class="btn" data-key="left">◀</div><div class="btn" data-key="down">▼</div><div class="btn" data-key="right">▶</div></div><div class="actions"><div class="btn act special" data-key="special">C<br>CROC</div><div class="btn act jump" data-key="jump">JUMP</div><div class="btn act kick" data-key="kick">Z<br>KICK</div><div class="btn act punch" data-key="punch">X<br>PUNCH</div></div></div></div>
-<div class="screen" id="screen"><div class="panel"><div class="logo">ALL ON RED!</div><div class="subtitle">LEVEL 2 · COMIC CON CHAOS</div><div class="desc" id="desc">Annie is waiting at Luton Comic Con! Fight off selfie-mad fans, reach the main stage and find the mysterious portal.<br><b>Grab power coins to throw exploding BLUE CROCS!</b></div><button class="go" id="start">START LEVEL 2</button><button class="go" id="audioTestMenu" style="margin-left:8px;background:#295975;font-size:13px;padding:8px 10px">♪ TEST SOUND</button><div id="audioStatus" role="status" style="font-size:11px;font-weight:900;margin-top:5px">Audio: tap TEST SOUND to enable</div><div class="help">PHONE: arrows · C CROC · JUMP · Z KICK · X PUNCH<br>KEYBOARD: WASD / arrows · SPACE jump · X punch · Z kick · C exploding Croc<br>LANDSCAPE ONLY · Turn phone sideways to play · Touch controls</div></div></div>
+<div class="screen" id="screen"><div class="panel"><div class="logo">ALL ON RED!</div><div class="subtitle">LEVEL 2 · COMIC CON CHAOS · v1.6</div><div class="desc" id="desc">Annie is waiting at Luton Comic Con! Fight off selfie-mad fans, reach the main stage and find the mysterious portal.<br><b>Grab power coins to throw exploding BLUE CROCS!</b></div><button class="go" id="start">START LEVEL 2</button><button class="go" id="audioTestMenu" style="margin-left:8px;background:#295975;font-size:13px;padding:8px 10px">♪ TEST SOUND</button><div id="audioStatus" role="status" style="font-size:11px;font-weight:900;margin-top:5px">Audio: tap TEST SOUND to enable</div><div class="help">PHONE: arrows · C CROC · JUMP · Z KICK · X PUNCH<br>KEYBOARD: WASD / arrows · SPACE jump · X punch · Z kick · C exploding Croc<br>LANDSCAPE ONLY · Turn phone sideways to play · Touch controls</div></div></div>
 <div class="story-screen hidden" id="storyScreen" aria-live="polite">
  <div class="story-panel">
   <div class="story-head"><span>ALL ON RED! · COMIC SCENE</span><span id="storyCount">1 / 3</span></div>
@@ -539,17 +539,17 @@ function paint(){ctx.setTransform(1,0,0,1,0,0);R(0,0,cv.width,cv.height,'#1a2440
  if(bubbleT>0){R(61,50,390,28,'#ffffffed');R(62,50,388,2,'#273044');label(bubble,256,68,10,'#273044','center');}
  if(noticeT>0){R(117,84,278,21,'#282539dc');label(notice,256,98,11,'#fff0b3','center');}
 
- label("ALL ON RED!  •  LEVEL 2: COMIC CON CHAOS",12,280,8,'#f5e8c6');
+ label("ALL ON RED!  •  LEVEL 2: COMIC CON CHAOS · v1.6",12,280,8,'#f5e8c6');
  const goal=mission===-1?220:mission===0?920:mission===1?(stageTalked?(stageSelfieKills>=4?4930:4010):3950):5035;
  if(Math.abs(goal-p.x)>175 && noticeT<1 && bubbleT<1){label(goal>p.x?'OBJECTIVE →':'← OBJECTIVE',goal>p.x?W-10:10,119,11,'#d8a93d',goal>p.x?'right':'left');}
  ctx.restore();}
-reset(false);mode='menu';screen.classList.remove('hidden');document.querySelector('.subtitle').textContent="LEVEL 2 · COMIC CON CHAOS";
+reset(false);mode='menu';screen.classList.remove('hidden');document.querySelector('.subtitle').textContent="LEVEL 2 · COMIC CON CHAOS · v1.6";
 let last=0,acc=0;function loop(now){if(!last)last=now;const dt=Math.min(45,Math.max(0,now-last));last=now;if(mode==='play'&&!portraitBlocked){acc+=dt;let n=0;while(acc>=16.6667&&n<3&&mode==='play'){update();acc-=16.6667;n++;}}else acc=0;paint();musicTick();requestAnimationFrame(loop);}requestAnimationFrame(loop);
 window.__allOnRedDebug={get:()=>({mode,mission,x:p.x,y:p.y,z:p.z,hp:p.hp,power,openingKills,stageSelfieKills,kills,crocs:crocs.length,coins:coins.filter(c=>!c.taken).length,cutscene:cutscene?.name,frame,notice,atk:p.atk, action:p.action,hitDone:p.hitDone, enemies:enemies.filter(e=>!e.dead).length, nearbyEnemies:enemies.filter(e=>Math.abs(e.x-p.x)<100).map(e=>({x:e.x,y:e.y,hp:e.hp,dead:e.dead,stun:e.stun,inv:e.inv,zone:e.zone}))}),setPlayer:(x,y=244,z=0)=>{p.x=x;p.y=y;p.z=z;p.on=0;p.vz=0},clearEnemies:()=>{enemies.forEach(e=>e.dead=true)},getDraw:()=>ctx, advanceScene:sceneAdvance, jumpToMission:(n)=>{mission=n;hud()}, setPower:n=>{power=n;hud()}, throwCroc, defeatOpening:()=>{enemies.filter(e=>e.zone===0).forEach(e=>{e.hp=0;e.dead=true;openingKills++;});mission=1;hud();}, showScene:sceneStart};
 })();
 </script><script>
-if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
- window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+if('serviceWorker' in navigator){
+ window.addEventListener('load',()=>navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.unregister()))).catch(()=>{}));
 }
 </script>
 <script>
