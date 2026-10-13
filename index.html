@@ -294,6 +294,8 @@ function sceneAdvance(){
  }
  renderStory();
 }
+function sr(x,y,w,h,c){storyCtx.fillStyle=c;storyCtx.fillRect(Math.round(x),Math.round(y),Math.ceil(w),Math.ceil(h));}
+function st(t,x,y,size=11,c='#fff',align='left'){storyCtx.fillStyle=c;storyCtx.textAlign=align;storyCtx.font='1000 '+size+'px Arial,sans-serif';storyCtx.fillText(t,Math.round(x),Math.round(y));}
 function portrait(x,kind,step=0){
  const skin=kind==='annie'?'#eab89a':kind==='fan'?'#dba47d':'#e3b697';
  const suit=kind==='hero'?'#c40f24':kind==='annie'?'#e0bb46':kind==='fan'?'#5b83b4':'#6f7b8f';
@@ -440,6 +442,69 @@ function convention(){for(let y=0;y<175;y+=6)R(0,y,W,6,y<44?'#dfd8d1':y<88?'#d4c
  }
 function town(){convention();}
 function shadowAt(x,y,rad=13){R(x-rad,y,rad*2,3,'#50596770');R(x-rad+4,y+3,rad*2-8,2,'#50596765');}
+function sprite(spec){
+ const x=Math.round(spec.x-cam),y=Math.round(spec.y-(spec.z||0));if(x<-65||x>W+65)return;
+ const hero=spec===p,old=spec.person==='old',girl=spec.person==='girl',annie=spec.person==='annie',parent=spec.person==='parent';
+ const foe=spec.t!==undefined;const typ=foe?enemyTypes[spec.t]:null;
+ const body=hero?S.red:typ?typ.shirt:old?'#6b7f65':girl?'#eab448':annie?'#e0b340':parent?spec.shirt:'#6d88a4';
+ const skin=hero?S.red:typ?typ.skin:old?'#e6b797':girl?'#d9a07c':annie?'#e9b99b':parent?spec.skin:S.skin3;
+ const hair=hero?S.red:typ?typ.hair:old?'#d0cbc1':girl?'#303147':annie?'#694332':parent?spec.hair:'#6a3e31';
+ const pants=hero?'#a60c1b':typ?typ.pant:old?'#474d58':girl?'#af4c55':annie?'#303653':parent?'#40546a':'#365f75';
+ const shoe=hero?S.blue:typ?typ.shoe:old?'#453b38':girl?'#f9f0d9':annie?'#2c2e39':'#434759';
+ if(foe&&spec.down>0){shadowAt(x,spec.y,16);R(x-17,y-9,29,8,body);R(x+10,y-9,11,7,skin);R(x-24,y-8,10,5,pants);return;}
+ shadowAt(x,spec.y,hero?17:14);
+ ctx.save();ctx.translate(x,y);if(spec.face<0)ctx.scale(-1,1);if((spec.inv||0)>0&&frame%6<3)ctx.globalAlpha=.55;
+ const fighting=hero&&spec.atk>0,enemyAttacking=foe&&spec.attack>0;
+ const kick=fighting&&(spec.action==='kick'||spec.action==='airkick');
+ const punch=fighting&&spec.action==='punch';
+ const moving=(hero?spec.action==='walk':foe?Math.abs(spec.vx||0)>0||Math.abs(spec.x-p.x)<220:false)&&!kick&&!punch;
+ const stride=moving?Math.sin(hero?spec.walk:spec.walk)*5:0,bob=moving?Math.abs(stride)*.22:0;
+ // torso
+ R(-12,-46-bob,24,30,S.ink);R(-12,-45-bob,24,24,body);R(-12,-44-bob,5,23,hero?S.black:'#2b3347');R(7,-44-bob,5,23,hero?S.black:'#343a46');
+ if(hero){R(-8,-40-bob,15,13,S.redLight);R(-12,-45-bob,6,7,S.black);R(6,-45-bob,6,7,S.black);} else if(annie){R(-8,-40-bob,15,15,'#e9cc57');R(-2,-45-bob,5,23,'#202a35');}
+ R(-11,-25-bob,22,5,'#2e303e');R(-4,-24-bob,8,4,hero?'#aaacae':'#c9b78f');
+ // head
+ R(-11,-67-bob,22,23,S.ink);R(-9,-65-bob,19,20,skin);
+ if(hero){R(-10,-67-bob,21,22,S.red);R(-11,-62-bob,11,11,S.black);R(2,-62-bob,9,11,S.black);R(-7,-58-bob,5,5,S.cream);R(5,-58-bob,4,5,S.cream);R(-8,-66-bob,17,4,S.redLight);} else {
+  R(-10,-67-bob,20,8,hair);R(-12,-61-bob,6,6,hair);
+  if(girl){R(-16,-66-bob,7,21,hair);R(8,-63-bob,6,19,hair);R(-16,-60-bob,5,8,'#cf647a');}
+  if(annie){R(8,-68-bob,7,10,hair);R(-12,-67-bob,3,8,hair);} if(old){R(-12,-66-bob,25,5,'#555d61');R(-10,-70-bob,18,6,'#5c6669');R(-7,-59-bob,4,3,'#e5e9e6');}
+  if(typ&&typ.style==='cap'){R(-12,-69-bob,23,5,'#4f3f56');R(5,-64-bob,12,3,'#4f3f56');}
+  if(typ&&typ.style==='spiky'){R(-7,-72-bob,4,7,hair);R(0,-73-bob,4,7,hair);R(6,-70-bob,3,7,hair);}  
+  R(-4,-58-bob,3,3,'#fff6e0');R(5,-58-bob,3,3,'#fff6e0');R(-3,-57-bob,2,2,S.black);R(6,-57-bob,2,2,S.black);R(4,-49-bob,5,2,'#9a5951');
+ }
+ // arms
+ R(-17,-43-bob,7,21,S.ink);R(-15,-42-bob,5,15,body);R(-16,-27-bob,7,6,skin);
+ // legs - special handling to prevent third leg on kick
+ if(kick){
+   // support leg
+   R(-9,-19,7,16,pants);R(-11,-6,12,6,shoe);if(hero)R(-10,-4,10,3,S.blueLight);
+   // kicking leg only
+   R(4,-27-bob,24,8,pants);R(27,-28-bob,13,9,shoe);if(hero)R(27,-25-bob,11,3,S.blueLight);
+ }else{
+   R(-10+stride*.65,-19,9,17,S.ink);R(2-stride*.65,-19,9,17,S.ink);
+   R(-9+stride*.65,-19,7,16,pants);R(3-stride*.65,-19,7,16,pants);
+   R(-11+stride*.65,-6,12,6,shoe);R(2-stride*.65,-6,12,6,shoe);
+   if(hero){R(-10+stride*.65,-4,10,3,S.blueLight);R(3-stride*.65,-4,10,3,S.blueLight);}   
+ }
+ if(kick){R(9,-44-bob,5,15,body);R(9,-30-bob,7,6,skin);} else if(punch){const extended=spec.atk<12&&spec.atk>4;R(10,-44-bob,6,17,hero?S.black:body);if(extended){R(11,-45-bob,28,8,S.ink);R(13,-43-bob,25,5,body);R(37,-45-bob,11,9,hero?'#e6e2d9':skin);R(42,-44-bob,7,3,'#ffffff');}else{R(13,-45-bob,10,12,body);R(16,-48-bob,9,8,hero?'#e6e2d9':skin);}} else if(hero&&spec.special>0){R(10,-46-bob,13,7,S.red);R(20,-51-bob,14,7,S.red);R(32,-53-bob,8,8,'#e6e2d9');} else if(enemyAttacking){R(10,-41-bob,19,8,body);R(26,-40-bob,7,7,skin);} else if(spec.stun>0){R(11,-36-bob,10,5,body);R(18,-38-bob,7,8,skin);} else {R(11,-44-bob+stride*.3,7,17,body);R(11,-28-bob+stride*.3,7,7,skin);if(old){R(15,-25-bob,2,27,'#85634a');R(13,0,7,2,'#85634a');}}
+ if(hero&&spec.carry){
+  // Cat attacks from ABOVE Red Man's head/shoulder, never across the face.
+  const sw=Math.sin(frame*.43)*3, claw=(frame%34<16);
+  R(-6,-79+sw,26,16,'#d9822d');R(-7,-87+sw,8,10,'#e99c3b');R(9,-87+sw,8,10,'#e99c3b');
+  R(-3,-78+sw,3,3,'#272031');R(12,-78+sw,3,3,'#272031');R(5,-72+sw,4,2,'#6c2b2d');
+  R(-15,-67+sw,13,6,'#d9822d');R(16,-67+sw,11,6,'#df8d31');
+  R(15,-76+sw,13,5,'#b96925');R(25,-86+sw,5,12,'#bd732c');
+  if(claw){R(15,-65,11,3,'#f6e3be');R(20,-72,2,9,'#f6e3be');R(24,-75,2,9,'#f6e3be');}
+ }
+ 
+ ctx.restore();
+ if(foe){R(x-12,y-78,24,3,'#292536');R(x-12,y-78,24*(Math.max(0,spec.hp)/spec.maxHp),3,'#ff875b');}
+}
+
+function person(spec){sprite(spec);}
+
+
 function oldMan(){ const x=mission<1?215:3960; person({person:'annie',x,y:242,z:0,face:-1,walk:0,action:'idle'}); label('ANNIE',x-cam,160,10,'#293249','center'); }
 function cat(){ if(mission<1)return; person({person:'parent',x:4050,y:242,z:0,face:-1,walk:0,shirt:'#8a5f9e',skin:'#d9aa8b',hair:'#2b2435'}); label('HOST',4050-cam,161,8,'#2a344b','center'); }
 function lostGirl(){ if(mission<1)return; person({person:'parent',x:4190,y:242,z:0,face:-1,walk:0,shirt:'#5a8d73',skin:'#b77b62',hair:'#34304c'}); label('TRADER',4190-cam,161,8,'#2a344b','center'); }
