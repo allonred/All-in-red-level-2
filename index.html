@@ -89,7 +89,7 @@ html,body,#game,canvas,.controls,.btn,.screen,.scene,.story{touch-action:none!im
 <canvas id="game" aria-label="All on Red! Level 2 playable game"></canvas>
 <div class="hud"><div class="upper"><div class="tag" id="health">RED MAN ♥ ♥ ♥ ♥ ♥ ♥</div><div class="tag" id="power" aria-label="Special attack power coins">POWER ◉ 0/5</div><div class="tag objective" id="objective">OPENING — MEET ANNIE AT COMIC CON</div><button class="menubtn" id="mute" style="right:85px">♫ ON</button><button class="menubtn" id="testSound" style="background:#bdeccb">♪ TEST</button><button class="menubtn" id="pause">Ⅱ PAUSE</button></div>
 <div class="controls"><div class="pad"><div class="btn" data-key="up">▲</div><div class="btn" data-key="left">◀</div><div class="btn" data-key="down">▼</div><div class="btn" data-key="right">▶</div></div><div class="actions"><div class="btn act special" data-key="special">C<br>CROC</div><div class="btn act jump" data-key="jump">JUMP</div><div class="btn act kick" data-key="kick">Z<br>KICK</div><div class="btn act punch" data-key="punch">X<br>PUNCH</div></div></div></div>
-<div class="screen" id="screen"><div class="panel"><div class="logo">ALL ON RED!</div><div class="subtitle">LEVEL 2 · COMIC CON CHAOS · v2.1</div><div class="desc" id="desc">Find a lost toy at the far end of a bustling Comic Con, get Annie a K-Pop Angel Protectors gift, and make it to the centre stage. Avoid selfie-hunters by jumping — they are fans, not enemies!<br><b>Then find out what is waiting backstage.</b></div><button class="go" id="start">START LEVEL 2</button><button class="go" id="audioTestMenu" style="margin-left:8px;background:#295975;font-size:13px;padding:8px 10px">♪ TEST SOUND</button><div id="audioStatus" role="status" style="font-size:11px;font-weight:900;margin-top:5px">Audio: tap TEST SOUND to enable</div><div class="help">PHONE: arrows · C CROC · JUMP · Z KICK · X PUNCH<br>KEYBOARD: WASD / arrows · SPACE jump · X punch · Z kick · C exploding Croc<br>LANDSCAPE ONLY · Turn phone sideways to play · Touch controls</div></div></div>
+<div class="screen" id="screen"><div class="panel"><div class="logo">ALL ON RED!</div><div class="subtitle">LEVEL 2 · COMIC CON CHAOS · v2.2</div><div class="desc" id="desc">Find a lost toy at the far end of a bustling Comic Con, get Annie a K-Pop Angel Protectors gift, and make it to the centre stage. Avoid selfie-hunters by jumping — they are fans, not enemies!<br><b>Then find out what is waiting backstage.</b></div><button class="go" id="start">START LEVEL 2</button><button class="go" id="audioTestMenu" style="margin-left:8px;background:#295975;font-size:13px;padding:8px 10px">♪ TEST SOUND</button><div id="audioStatus" role="status" style="font-size:11px;font-weight:900;margin-top:5px">Audio: tap TEST SOUND to enable</div><div class="help">PHONE: arrows · C CROC · JUMP · Z KICK · X PUNCH<br>KEYBOARD: WASD / arrows · SPACE jump · X punch · Z kick · C exploding Croc<br>LANDSCAPE ONLY · Turn phone sideways to play · Touch controls</div></div></div>
 <div class="story-screen hidden" id="storyScreen" aria-live="polite">
  <div class="story-panel">
   <div class="story-head"><span>ALL ON RED! · COMIC SCENE</span><span id="storyCount">1 / 3</span></div>
@@ -434,12 +434,85 @@ function update(){frame++;if(fanBump>0)fanBump--;if((k.left||k.right||k.up||k.do
 
 function brickWall(x,y,w,h,color,light){R(x,y,w,h,color);for(let by=0;by<h;by+=10){R(x,y+by,w,1,light);const off=by%20===0?0:10;for(let xx=off;xx<w;xx+=20)R(x+xx,y+by,1,10,light);}}
 const traderTypes=['COMICS','FIGURES','ART PRINTS','RETRO GAMES','COLLECTIBLES','ART BOOKS','PLUSH TOYS','CARDS','POSTERS','HANDMADE','TOYS','DICE'];
-function stall(wx,i){const x=Math.floor(wx-cam);if(x<-86||x>W+86)return;const cloth=['#854d88','#387c9c','#bf6456','#577b5b','#79629b'][i%5];
- R(x,105,80,45,'#dad1c4');R(x+2,108,76,38,'#efe9df');R(x+25,91,28,18,['#e1b795','#ac795b','#f0c4a4'][i%3]);R(x+23,86,32,8,['#47343d','#27273b','#6d493e'][i%3]);R(x+14,106,16,28,['#467a96','#bf6e62','#725eac'][i%3]);R(x+7,145,66,5,'#d2b7a0');
- R(x,150,80,20,cloth);label(i===14?'K-POP ANGEL':traderTypes[i%traderTypes.length],x+40,163,8,'#fff5d9','center');
- for(let j=0;j<5;j++){const bx=x+5+j*15;R(bx,134-(j%2)*6,12,15,['#86afd2','#eed085','#bf84ad','#9cc08b'][j%4]);R(bx+2,136-(j%2)*6,8,7,'#f5ecd4');}
- if(i%3===0){R(x+53,118,25,11,'#f1dc71');label('SALE!',x+65,126,8,'#ab3045','center');}
- if(i%2===0){const cx=x+65;R(cx-11,123,18,18,'#b99a86');R(cx-10,139,20,29,'#718db3');R(cx-8,117,16,10,'#e5be9d');}
+const boothNames=['PANEL PANIC','FIGURE FANATICS','INK & IMAGINE','RETRO REWIND','THE VAULT','PAPER DRAGON','PLUSH PLANET','CARD KINGDOM','WALL OF ART','MADE WITH MAGIC','TOY TREASURE','DRAGON DICE'];
+const boothPalettes=[
+ ['#385d83','#f6cc76','#a9d6f3'],['#734479','#eec8e6','#d9afd6'],['#287c80','#f6c882','#afe7d5'],
+ ['#37548c','#ff9a66','#a5c6ed'],['#654c83','#e5ce79','#d1b5df'],['#986147','#ffe1a0','#f7d0b2'],
+ ['#a44f82','#ffeaa4','#f7b9db'],['#386e78','#c8e6dc','#9ad5cc'],['#a84f53','#ffdbab','#f5b8a7'],
+ ['#597b4e','#f1dba2','#c7dfa5'],['#a66540','#fff2ab','#ffcea4'],['#614b92','#e8c5ee','#bfa9ed']
+];
+function pixelPoly(points,col){ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.closePath();ctx.fillStyle=col;ctx.fill();}
+function merch(x,y,type,v=0){
+ const colors=['#f5d789','#82d1e0','#e7a0c8','#9bd0a0','#d6a6ee'];const c=colors[(v+type)%5];
+ if(type===0||type===5||type===8){ // comics, art books and signed prints
+  R(x,y-20,15,21,'#252a43');R(x+2,y-18,11,17,c);R(x+4,y-16,7,5,'#f7edcd');R(x+5,y-10,4,8,type===8?'#8d507b':'#477fac');R(x+2,y-5,11,2,'#ffe9a3');
+  if(v%2===0){R(x-2,y-23,19,3,'#f9e7ca');R(x-1,y-22,17,1,'#776286');}
+ }else if(type===1||type===4||type===10){ // boxed vinyl figures, toys, collectibles
+  R(x,y-23,17,23,'#343b52');R(x+2,y-21,13,17,'#f6efda');R(x+4,y-19,9,9,c);R(x+6,y-10,5,6,'#3d5783');R(x+2,y-3,13,2,'#ed9b60');R(x+12,y-19,2,7,'#fff');
+ }else if(type===2||type===9){ // framed handmade prints
+  R(x,y-24,19,25,'#3b3850');R(x+2,y-22,15,21,c);R(x+5,y-20,8,5,'#ffe4ab');pixelPoly([[x+3,y-4],[x+9,y-15],[x+15,y-4]],'#595a95');R(x+1,y-1,18,2,'#f4cd81');
+ }else if(type===3){ // cartridges and controllers
+  R(x,y-19,17,20,'#303447');R(x+2,y-17,13,12,c);R(x+5,y-14,7,6,'#eff3ea');R(x+5,y-3,7,2,'#9697b0');R(x+11,y-6,2,2,'#f48b9a');
+ }else if(type===6){ // plush with ears
+  R(x+1,y-18,5,9,c);R(x+12,y-18,5,9,c);R(x+2,y-15,15,16,c);R(x+5,y-10,3,3,'#343047');R(x+12,y-10,3,3,'#343047');R(x+9,y-7,3,2,'#bc657c');R(x+4,y-1,5,4,c);R(x+11,y-1,5,4,c);
+ }else if(type===7){ // trading-card booster packs
+  R(x,y-23,16,23,'#30344e');R(x+2,y-21,12,18,c);R(x+4,y-17,8,8,'#fff0bd');R(x+6,y-15,4,4,'#cd789d');R(x+4,y-4,8,2,'#fdf5e1');
+ }else { // dice towers / tabletop
+  R(x,y-16,16,17,'#554375');R(x+2,y-14,12,12,c);R(x+4,y-12,3,3,'#fff');R(x+10,y-9,3,3,'#fff');R(x+5,y-5,3,3,'#fff');
+ }
+}
+function trader(wx,variant){
+ const x=Math.round(wx-cam),y=146; // behind counter; foreground stock hides lower hands
+ const skin=['#ecc49f','#ab765b','#e6aa84','#8e634d','#dbb698'][variant%5];
+ const hair=['#382e3f','#8c563e','#272c47','#b18655','#52535b'][variant%5];
+ const clothes=['#417b8f','#b8647c','#67875b','#7b5d9b','#a46f42'][variant%5];
+ const o=(variant%4===0?3:0),w=(variant%5===1?30:25);
+ // Shirt/shoulders, neck, arms reaching to customers
+ R(x-w/2-3,y-31, w+6,32,'#2d3044');R(x-w/2,y-29,w,30,clothes);
+ R(x-5,y-37,10,9,skin);R(x-12,y-55,24,23,'#2c2c42');R(x-10,y-54,20,21,skin);
+ // ears and non-rectangular hairlines / fringe
+ R(x-13,y-46,4,8,skin);R(x+10,y-46,4,8,skin);
+ if(variant%6===0){R(x-12,y-58,24,7,hair);R(x+5,y-54,9,4,hair);R(x-14,y-54,6,12,hair);}
+ else if(variant%6===1){R(x-12,y-59,24,7,hair);R(x-10,y-53,5,3,hair);R(x+6,y-53,5,3,hair);R(x+8,y-44,6,17,hair);}
+ else if(variant%6===2){R(x-13,y-58,26,8,hair);R(x-12,y-51,5,10,hair);R(x+8,y-53,5,8,hair);R(x-8,y-60,7,4,hair);}
+ else if(variant%6===3){R(x-13,y-59,26,7,'#345a6e');R(x+2,y-55,15,3,'#345a6e');R(x-9,y-50,5,4,hair);}
+ else if(variant%6===4){R(x-14,y-57,28,8,hair);R(x-13,y-50,5,14,hair);R(x+10,y-51,5,13,hair);}
+ else {R(x-12,y-59,24,9,hair);R(x-5,y-62,6,6,hair);R(x+5,y-61,6,5,hair);}
+ // readable features
+ R(x-7,y-46,4,3,'#fff1e1');R(x+4,y-46,4,3,'#fff1e1');R(x-5,y-45,2,2,'#293046');R(x+6,y-45,2,2,'#293046');R(x-1,y-41,3,3,'#c78b74');R(x-4,y-37,8,2,'#7e4247');
+ if(variant%4===0){R(x-10,y-49,10,7,'#292c40');R(x+2,y-49,10,7,'#292c40');R(x-8,y-47,7,4,'#a3d6d5');R(x+4,y-47,7,4,'#a3d6d5');R(x,y-46,3,2,'#292c40');}
+ if(variant%6===2){R(x-8,y-34,16,5,hair);R(x-3,y-32,7,3,hair);}
+ // neckline, badges, sleeves and distinct hand poses
+ R(x-6,y-28,12,4,'#f2e6cc');R(x-2,y-22,5,8,variant%2?'#f7d882':'#314961');
+ R(x-w/2-9,y-28,8,17,'#2d3044');R(x-w/2-7,y-26,6,14,clothes);R(x-w/2-7,y-13,7,7,skin);
+ R(x+w/2+1,y-27,8,15,'#2d3044');R(x+w/2+3,y-25,6,13,clothes);R(x+w/2+2,y-13,8,7,skin);
+ if(variant%3===0){R(x+w/2+4,y-21,5,3,skin);R(x+w/2+8,y-26,4,8,skin);}
+}
+function stall(wx,i){
+ const w=100,x=Math.floor(wx-cam);if(x<-w-18||x>W+18)return;
+ const t=i%12,pal=boothPalettes[t],main=pal[0],gold=pal[1],light=pal[2];
+ // Backdrop, rails, large lit top banner and floor-to-floor continuous vendor row
+ R(x,80,w,91,'#2c334b');R(x+2,82,w-4,83,light);R(x+4,85,w-8,67,['#dce5e9','#efe0d6','#e7deee'][i%3]);
+ R(x,75,w,22,main);R(x,74,w,3,gold);R(x+3,94,w-6,3,'#263449');
+ label(boothNames[t],x+w/2,90,Math.min(9,boothNames[t].length>15?7.4:8.7),'#fff8df','center');
+ // Side bunting and upright frames distinguish stalls
+ R(x+2,99,4,53,gold);R(x+w-6,99,4,53,gold);
+ for(let h=0;h<4;h++){R(x+13+h*22,101,17,28,'#4b5368');R(x+15+h*22,103,13,24,['#9bafe2','#e5a9ac','#f5dc99','#b1cf9d'][(h+i)%4]);
+   R(x+17+h*22,107,9,8,['#4c628f','#86577b','#6c8d83'][h%3]);R(x+19+h*22,105,5,5,'#f5e9be');R(x+18+h*22,119,7,2,'#fef5d9');}
+ // Readable trader with hair, eyes, arms, expression
+ trader(wx+w*.51,i+3);
+ // Shiny tabletop with merchandise blocking trader's lower torso
+ R(x,145,w,8,'#302f47');R(x+2,146,w-4,5,'#f2d9a8');
+ for(let j=0;j<5;j++)merch(x+4+j*19,149,t,i+j);
+ // Cloth actually draping down to the floor
+ R(x,154,w,22,'#2d3045');R(x+2,156,w-4,19,main);R(x+3,156,w-6,3,gold);
+ label(traderTypes[t],x+w/2,169,9,'#fff6dc','center');
+ R(x+7,172,w-14,2,'#ffffff55');
+ if(i%3===0){R(x+w-29,134,25,12,'#ffe4a1');label('SALE!',x+w-16,142,8,'#a43c48','center');}
+ if(i%5===1){R(x+5,132,24,12,'#f8f0cd');label('£5+',x+17,141,9,'#703950','center');}
+ if(i%4===2){R(x+w-27,99,25,7,gold);label('NEW',x+w-14,105,6,'#29354a','center');}
+ // Hanging triangular bunting, occasional shop lights
+ for(let j=0;j<4;j++)pixelPoly([[x+5+j*25,74],[x+13+j*25,74],[x+9+j*25,83]],j%2?gold:light);
 }
 function kpopMegaStall(){
  const x=Math.floor(1364-cam),w=360;
@@ -452,19 +525,99 @@ function kpopMegaStall(){
  for(let j=0;j<5;j++){let bx=x+8+j*70;R(bx,108,65,30,['#ad74cc','#66bed6','#e18ab3','#94b989','#deac71'][j]);
    R(bx+23,112,20,10,'#eed6ba');R(bx+16,121,33,15,['#fff3e2','#f9d0f0','#f5e9aa'][j%3]);
    R(bx+18,108,29,5,['#533d76','#5a4276','#7c537b'][j%3]);}
+ // Three individual K-pop vendors now have real faces, hairstyles and gestures too.
+ for(let j=0;j<3;j++)trader(1364+65+j*105,71+j);
  // Full table and printed cloth with bright vertical stripes
  R(x,142,w,28,'#b443a8');R(x+4,146,w-8,22,'#753a95');
  for(let j=0;j<19;j++)R(x+j*19,146,3,21,j%2?'#e77ac0':'#bb5ea6');
  label('OFFICIAL(ISH) FAN MERCH  •  KEYRINGS  •  PLUSH  •  PHOTO CARDS',x+w/2,162,10,'#fff5dd','center');
  for(let j=0;j<14;j++){let bx=x+13+j*24;R(bx,130-(j%3)*5,16,17,['#f3ce73','#72d4dd','#da88c0','#d7b0f3'][j%4]);R(bx+3,133-(j%3)*5,10,6,'#fff7e8');}
  // Staff are stood BEHIND the tables, shoppers gather in FRONT.
- for(let j=0;j<3;j++){let bx=x+65+j*105;R(bx-9,106,18,23,['#8b5d9e','#75a6a6','#a86594'][j]);R(bx-7,96,14,12,'#e1ad93');R(bx-8,92,16,6,'#49304c');}
  // Sparkles and decorative light string
  for(let j=0;j<13;j++){let bx=x+11+j*27;R(bx,71,4,4,'#ffe89a');R(bx-2,73,8,1,'#fff9cd');R(bx+1,69,1,9,'#fff4c6');}
  if(frame%90<45){R(x+8,105,18,4,'#ffe898');R(x+w-24,105,18,4,'#ffe898');}
 }
-function cosplay(wx,j,walk=false){let x=Math.floor(wx-cam+(walk?Math.sin(frame*.006+j)*85:0));if(x<-40||x>W+40)return;const y=236+(j%3)*3,step=walk?Math.sin(frame*.13+j)*5:0;const coat=['#7755b3','#55a5a0','#cb566b','#d8ad59','#4f80be'][j%5];shadowAt(x,y,12);R(x-10,y-50,20,29,coat);R(x-8,y-67,16,18,['#e7b99b','#ad7857','#f2caa6'][j%3]);R(x-11,y-72,22,9,['#3d304a','#e0c461','#88496c'][j%3]);R(x-9+step,y-21,7,21,'#393750');R(x+2-step,y-21,7,21,'#393750');R(x-15,y-43,5,21,coat);R(x+11,y-43,5,21,coat);if(j%3===0){R(x+13,y-25,15,11,'#f2dba4');R(x+14,y-24,13,3,'#b9616b');}if(j%4===0){R(x-18,y-44,5,32,'#e6d6a5');}}
-function stageSet(){const x=2980-cam;if(x>W+300||x<-300)return;R(x,90,210,89,'#34344e');R(x+8,99,194,58,'#6a456b');R(x+25,64,160,28,'#f0ca83');label('MAIN STAGE',x+105,84,15,'#6a344e','center');R(x+30,149,150,28,'#414962');R(x+42,128,12,21,'#b8b5c5');R(x+161,128,12,21,'#b8b5c5');}
+// Con-floor civilians are COSTUMED people: readable characters, not generic blocks.
+// Animated walk cycles and varied browsing poses give the market life.
+function cosplay(wx,j,walk=false,browsing=false){
+ const sway=walk?Math.sin(frame*.010+j*1.6)*37:0;
+ const xx=Math.round(wx+sway-cam);if(xx<-65||xx>W+65)return;
+ const y=browsing?214+(j%3)*5:247+(j%3)*4,dx=walk?Math.sin(frame*.15+j)*3:0;
+ const style=j%12,body=['#ba335e','#a7afb9','#654d9c','#f4a6d9','#548a65','#9a6243','#aebbc3','#5a9f83','#8087a7','#c77a6d','#ca98bf','#8c6a58'][style];
+ const skin=['#eec19e','#ab7559','#d6a27f','#f4c9ad','#8f654a'][j%5];
+ const hair=['#29283b','#5e3b40','#ad7653','#47354e','#e1b656'][j%5];
+ shadowAt(xx,y,16);
+ ctx.save();ctx.translate(xx,y);
+ if((j%4===0)||walk&&Math.sin(frame*.014+j)>0)ctx.scale(-1,1);
+ // moving articulated shoes and trousers
+ R(-10+dx*.7,-19,10,18,'#28304b');R(2-dx*.7,-19,10,18,'#293046');
+ R(-11+dx*.7,-5,13,6,'#181c30');R(1-dx*.7,-5,14,6,'#1c2034');
+ // capes, tails, skirts, wings: readable costume outline BEFORE arms/torso
+ if(style===0||style===6||style===10)pixelPoly([[-11,-55],[-32,-40],[-26,-11],[0,-21],[17,-9],[20,-47]],style===0?'#f14370':style===6?'#8d4d5c':'#efc7ea');
+ if(style===2)pixelPoly([[-12,-53],[-24,-20],[21,-10],[14,-54]],'#8a6db8');
+ if(style===3||style===10)pixelPoly([[-13,-29],[-23,-15],[23,-15],[13,-29]],style===3?'#ed7aa9':'#bd7bcc');
+ if(style===4){pixelPoly([[-15,-52],[-34,-41],[-26,-23],[-9,-34]],'#9fcf77');pixelPoly([[15,-52],[34,-41],[26,-23],[10,-34]],'#9fcf77');R(-23,-61,12,8,'#517659');R(11,-61,12,8,'#517659');}
+ if(style===9){R(-17,-55,34,47,'#a4acbc');R(-13,-52,26,39,'#657b97');R(-11,-48,22,14,'#354968');R(-8,-44,16,6,'#a8fffa');}
+ // hips and chest
+ R(-13,-46,26,29,'#222b42');R(-11,-44,22,27,body);R(-9,-41,18,4,'#e6e4d0');
+ if(style===0){R(-10,-43,20,12,'#2c3868');R(-4,-40,8,6,'#ffda7a');R(-13,-22,26,4,'#f0dc91');}
+ if(style===1||style===6){R(-20,-44,11,16,'#c5d5db');R(9,-44,11,16,'#c5d5db');R(-15,-43,5,20,'#576886');R(10,-43,5,20,'#576886');R(-9,-33,18,9,'#54738a');R(-4,-30,8,4,'#b1eff8');}
+ if(style===2){R(-11,-38,22,5,'#dab780');R(-5,-42,9,15,'#e3c284');R(-16,-22,32,5,'#574479');}
+ if(style===3){R(-11,-43,22,14,'#f5f0d4');R(-11,-29,22,6,'#d95385');R(-16,-20,32,4,'#d95385');}
+ if(style===5){R(-14,-46,28,10,'#613c38');R(-9,-41,18,4,'#e4b97c');R(-11,-22,22,7,'#50384a');}
+ if(style===7){R(-11,-41,22,12,'#d3ead1');R(-8,-29,16,7,'#578b66');R(-13,-20,26,5,'#bfe3af');}
+ if(style===8){R(-8,-39,16,13,'#dae0e2');R(-6,-37,12,9,'#74f4ed');R(-13,-25,26,7,'#364666');}
+ if(style===11){R(-15,-45,30,14,'#6e4b38');R(-11,-29,22,11,'#bb885c');R(-13,-24,26,4,'#dec78a');}
+ // Heads and accessories. Explicit pixel eyes and facial accents.
+ if(style===1||style===6){
+  R(-14,-72,28,29,'#32374f');R(-12,-69,24,25,style===1?'#c2cad8':'#d4c5aa');
+  R(-10,-61,20,10,style===1?'#243d60':'#777083');R(-8,-59,16,4,style===1?'#55edfa':'#a9c9d0');
+  if(style===6){R(-16,-72,32,6,'#c1cbd3');R(-5,-75,10,6,'#e0d18d');}
+ }else if(style===8||style===9){
+  R(-17,-78,34,35,'#222a43');R(-15,-76,30,31,style===8?'#8999ad':'#d0a3a0');
+  R(-11,-65,22,11,style===8?'#35485d':'#f5ebdf');R(-9,-62,18,5,style===8?'#a0f4ed':'#272b42');
+  if(style===8){R(-3,-85,6,10,'#becfe0');R(-5,-88,10,6,'#f2c56a');}
+  else{R(-14,-71,28,7,'#bb6779');R(-13,-52,26,5,'#894b68');}
+ }else{
+  R(-13,-72,26,29,'#292b3e');R(-11,-70,22,25,skin);
+  R(-8,-58,4,3,'#fff7e1');R(4,-58,4,3,'#fff7e1');R(-7,-57,2,2,'#252a43');R(5,-57,2,2,'#252a43');R(-3,-49,7,2,'#8b5963');
+  R(-12,-74,24,10,style===3?'#f189cc':style===10?'#ecd38a':hair);
+  if(style===0){R(-12,-70,24,18,'#292f51');R(-10,-63,10,7,'#f6f1dc');R(2,-63,8,7,'#f6f1dc');R(-8,-60,6,4,'#292f51');R(3,-60,5,4,'#292f51');}
+  if(style===2){pixelPoly([[-20,-75],[0,-102],[20,-75]],'#634993');R(-22,-76,44,7,'#7854a1');R(-3,-90,7,8,'#f2d68a');}
+  if(style===3){R(-24,-74,12,26,'#ef82c7');R(12,-74,12,26,'#76c5ed');R(-20,-81,11,11,'#ef82c7');R(10,-81,11,11,'#76c5ed');}
+  if(style===4){pixelPoly([[-10,-75],[-16,-90],[-1,-81]],'#3e6249');pixelPoly([[5,-82],[15,-91],[12,-74]],'#3e6249');R(-13,-74,26,7,'#568863');}
+  if(style===5){R(-23,-79,46,6,'#303044');pixelPoly([[-17,-79],[-13,-91],[13,-91],[17,-79]],'#3c3644');R(-11,-70,22,5,'#3c3644');R(-4,-49,9,3,'#554036');}
+  if(style===7){R(-15,-73,30,7,'#e2a25a');R(-17,-66,7,8,skin);R(11,-66,7,8,skin);R(-13,-80,26,5,'#4e806a');}
+  if(style===10){R(-10,-78,20,5,'#f0c762');R(-4,-85,8,8,'#f0c762');R(-2,-90,4,5,'#fff7c6');R(12,-65,12,22,'#eecce4');}
+  if(style===11){R(-14,-78,28,7,'#4f3e39');R(-6,-84,12,10,'#4f3e39');R(-10,-65,20,5,'#3b323b');R(-8,-65,7,4,'#b0d2dc');R(2,-65,7,4,'#b0d2dc');}
+ }
+ // Arms, gloved hands and recognisable prop equipment
+ R(-18,-43,7,21,'#283044');R(-17,-42,6,18,body);R(-17,-25,8,7,style===1||style===6?'#d0d7e1':skin);
+ R(11,-43,8,21,'#293047');R(12,-42,6,19,body);R(11,-25,9,7,style===1||style===6?'#d0d7e1':skin);
+ if(style===2){R(19,-78,4,77,'#9f734e');R(16,-81,10,6,'#c2e5e3');R(18,-84,6,4,'#fff6b8');}
+ if(style===5){pixelPoly([[18,-37],[23,-57],[25,-10]],'#dee2dc');R(18,-37,11,3,'#e6c884');}
+ if(style===6){R(18,-49,14,26,'#c9d5db');R(20,-46,10,20,'#596e8d');R(23,-40,4,7,'#f3c77d');}
+ if(style===7){R(18,-53,3,49,'#a97b48');R(17,-55,6,6,'#d3e0ca');}
+ if(style===0){R(18,-40,5,27,'#f7e0ab');R(18,-42,16,5,'#e6f6fa');}
+ if(style===3||style===10){R(15,-26,15,10,'#f5e0a5');R(16,-26,14,4,'#ee7fae');}
+ if(style===11){R(17,-49,13,11,'#f7f2e3');R(20,-47,7,7,'#ce9178');R(23,-45,3,3,'#2b2b3d');}
+ if(browsing){ // At-the-table customers visibly holding purchases
+  R(15,-28,16,16,'#edc988');R(16,-27,14,4,'#b66f7f');R(19,-24,8,4,'#f7ecdf');
+ }
+ ctx.restore();
+}
+function stageSet(){
+ const x=2980-cam;if(x>W+240||x<-240)return;
+ // Central show stage: skirted riser, backdrop, curtain, speakers, spotlights and crowd barriers
+ R(x-12,58,234,119,'#2b3048');R(x-7,62,223,107,'#4d375f');R(x-5,66,219,89,'#844c76');
+ for(let i=0;i<12;i++){R(x+i*18,71,2,82,'#a76c83');R(x+i*18+5,72,2,82,'#77405e');}
+ R(x-18,53,244,9,'#292c45');for(let i=0;i<8;i++){const lx=x+i*32;R(lx,55,10,7,'#e8c478');R(lx+3,61,4,10,i%2?'#f6d298':'#add7ec');}
+ R(x+12,73,190,30,'#edc67a');R(x+16,77,182,22,'#414161');label('MAIN STAGE',x+105,92,17,'#fff0b7','center');
+ R(x+2,151,206,25,'#2a2f46');R(x+2,152,206,4,'#e8bd77');R(x+14,159,180,16,'#55436a');
+ R(x-25,107,24,67,'#232639');R(x-23,112,20,23,'#484b66');R(x-23,140,20,23,'#484b66');R(x+210,107,24,67,'#232639');R(x+212,112,20,23,'#484b66');R(x+212,140,20,23,'#484b66');
+ R(x+24,169,160,5,'#e7b976');R(x+30,174,150,3,'#292b40');
+ label('BACKSTAGE  ▶',x+146,124,9,'#fdf1d6','center');
+}
 function backstageRoom(){
  for(let y=0;y<180;y+=6)R(0,y,W,6,y<90?'#424c64':'#3b4058');R(0,175,W,98,'#697280');
  for(let i=-2;i<12;i++){let x=Math.floor(i*80-(cam%80));R(x,18,6,169,'#666779');R(x+13,198,60,4,'#848897');}
@@ -477,11 +630,28 @@ function backstageRoom(){
   R(x+Math.cos(a)*rx,y+Math.sin(a)*ry,3,3,j%2?'#869bad':'#586f89');}
  label('???',x,y-78,17,'#e9f1ff','center');
 }
-function convention(){if(backstage){backstageRoom();return;}for(let y=0;y<180;y+=6)R(0,y,W,6,y<70?'#d4d0cb':'#bdbab6');for(let i=-2;i<14;i++){let x=Math.floor(i*60-(cam*.19%60));R(x,12,42,9,'#f4f0df');R(x+5,26,33,3,'#ece4cc');}R(0,180,W,88,'#96999e');for(let i=-2;i<20;i++){let x=Math.floor(i*36-(cam%36));R(x,195,1,74,'#b8b9bb');R(x,219,34,1,'#b0b2b6');R(x,247,34,1,'#a8aab0');}R(0,43,W,13,'#51546a');label('LUTON COMIC CON  •  TRADERS & ARTISTS',256,53,10,'#fff1ba','center');
- for(let i=0;i<74;i++){if(i>=12&&i<=16)continue;stall(500+i*72,i);}kpopMegaStall();stageSet();
- for(let i=0;i<29;i++)cosplay(570+i*190,i,i%3===0);
+function convention(){
+ if(backstage){backstageRoom();return;}
+ // Indoor hall: skylight trusses, striped wall, event signage and tiled market floor
+ for(let y=0;y<180;y+=6)R(0,y,W,6,y<70?'#d4d0cb':'#c5c0bc');
+ for(let i=-2;i<14;i++){let x=Math.floor(i*60-(cam*.19%60));R(x,12,42,9,'#f4f0df');R(x+5,26,33,3,'#ece4cc');}
+ R(0,177,W,95,'#96999e');
+ for(let i=-2;i<19;i++){let x=Math.floor(i*36-(cam%36));R(x,193,1,79,'#b8b9bb');R(x,218,34,1,'#b0b2b6');R(x,245,34,1,'#a8aab0');}
+ R(0,43,W,13,'#51546a');label('LUTON COMIC CON  •  TRADERS & ARTISTS',256,53,10,'#fff1ba','center');
+ // Continuous adjoining tables, not gaps; K-pop featured booth stays wider/brighter than neighbours.
+ for(let i=0;i<54;i++){stall(480+i*100,i);}
+ kpopMegaStall();
+ stageSet();
+ // Rows of actual cosplayers, some buying at tables, some strolling; fewer close to Annie / lost child.
+ for(let i=0;i<40;i++)cosplay(552+i*135,i,i%4!==0,i%3===0);
+ for(let i=0;i<24;i++)cosplay(650+i*223,i+45,i%5===0,true);
+ // Decorative shopping bags and price-chalkboard displays foreground at scattered stations
+ for(let i=0;i<18;i++){
+  const bx=Math.floor(710+i*280-cam);
+  if(bx<-45||bx>W+45)continue;
+  if(i%4===0){R(bx,180,24,25,'#4b475e');R(bx+2,182,20,21,'#f5e4c0');label('£2',bx+12,197,13,'#a54b67','center');}
+ }
 }
-
 function town(){convention();}
 function shadowAt(x,y,rad=13){R(x-rad,y,rad*2,3,'#50596770');R(x-rad+4,y+3,rad*2-8,2,'#50596765');}
 function sprite(spec){
@@ -571,11 +741,11 @@ function paint(){ctx.setTransform(1,0,0,1,0,0);R(0,0,cv.width,cv.height,'#1a2440
  if(bubbleT>0){R(61,50,390,28,'#ffffffed');R(62,50,388,2,'#273044');label(bubble,256,68,10,'#273044','center');}
  if(noticeT>0){R(117,84,278,21,'#282539dc');label(notice,256,98,11,'#fff0b3','center');}
 
- label("ALL ON RED!  •  LEVEL 2: COMIC CON CHAOS · v2.1",12,280,8,'#f5e8c6');
+ label("ALL ON RED!  •  LEVEL 2: COMIC CON CHAOS · v2.2",12,280,8,'#f5e8c6');
  const goal=backstage?1160:mission===0?5590:mission===1?345:mission===2?(annieTalked?1490:130):3060;
  if(Math.abs(goal-p.x)>175 && noticeT<1 && bubbleT<1){label(goal>p.x?'OBJECTIVE →':'← OBJECTIVE',goal>p.x?W-10:10,119,11,'#d8a93d',goal>p.x?'right':'left');}
  ctx.restore();}
-reset(false);mode='menu';screen.classList.remove('hidden');document.querySelector('.subtitle').textContent="LEVEL 2 · COMIC CON CHAOS · v2.1";
+reset(false);mode='menu';screen.classList.remove('hidden');document.querySelector('.subtitle').textContent="LEVEL 2 · COMIC CON CHAOS · v2.2";
 let last=0,acc=0;function loop(now){if(!last)last=now;const dt=Math.min(45,Math.max(0,now-last));last=now;if(mode==='play'&&!portraitBlocked){acc+=dt;let n=0;while(acc>=16.6667&&n<3&&mode==='play'){update();acc-=16.6667;n++;}}else acc=0;paint();musicTick();requestAnimationFrame(loop);}requestAnimationFrame(loop);
 window.__allOnRedDebug={get:()=>({mode,mission,x:p.x,y:p.y,z:p.z,hp:p.hp,power,kpopSeen,fanCount:enemies.length,portalSeen,portalDone,backstage,openingKills,stageSelfieKills,kills,crocs:crocs.length,coins:coins.filter(c=>!c.taken).length,cutscene:cutscene?.name,frame,notice,atk:p.atk, action:p.action,hitDone:p.hitDone, enemies:enemies.filter(e=>!e.dead).length, nearbyEnemies:enemies.filter(e=>Math.abs(e.x-p.x)<100).map(e=>({x:e.x,y:e.y,hp:e.hp,dead:e.dead,stun:e.stun,inv:e.inv,zone:e.zone}))}),setPlayer:(x,y=244,z=0)=>{p.x=x;p.y=y;p.z=z;p.on=0;p.vz=0},clearEnemies:()=>{enemies.forEach(e=>e.dead=true)},getDraw:()=>ctx, advanceScene:sceneAdvance, setBackstage:()=>{backstage=true;mission=4;p.x=90;cam=0;hud();}, jumpToMission:(n)=>{mission=n;hud()}, setPower:n=>{power=n;hud()}, throwCroc, defeatOpening:()=>{enemies.filter(e=>e.zone===0).forEach(e=>{e.hp=0;e.dead=true;openingKills++;});mission=1;hud();}, showScene:sceneStart};
 })();
